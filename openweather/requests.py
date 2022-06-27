@@ -24,13 +24,18 @@ Ihor Cheberiak (c) 2022
 https://www.linkedin.com/in/ihor-cheberiak/
 """
 
+from typing import Dict
+
 import requests
 
 
 class Requests:
-	def __init__(self, key: str) -> None:
-		url: str = 'https://api.openweathermap.org/data/3.0/onecall?'
-		token: str = key
+	URL: str = 'http://api.openweathermap.org/data/2.5/weather?'
 
-	def request_by_city(self, sity: str):
-		sity = sity.capitalize()
+	def __init__(self, key: str) -> None:
+		self.__token: str = f'appid={key}'
+
+	def request_by_city(self, sity: str) -> Dict:
+		sity = f'q={sity.capitalize()}&'
+
+		request_url = f'{self.URL}{sity}{self.__token}'

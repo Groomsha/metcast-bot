@@ -24,17 +24,7 @@ Ihor Cheberiak (c) 2022
 https://www.linkedin.com/in/ihor-cheberiak/
 """
 
-import const
 
-from telegram_bot.worker import Worker
-from openweather.requests import Requests
-
-
-if __name__ == '__main__':
-	telegram_bot = Worker()
-
-	request: Requests = Requests(const.weather_token)
-	request.request_by_city('Kyiv')
-
-# while True:
-# 	pass
+class Worker:
+	def __init__(self) -> None:
+		pass
