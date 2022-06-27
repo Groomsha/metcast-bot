@@ -24,10 +24,13 @@ Ihor Cheberiak (c) 2022
 https://www.linkedin.com/in/ihor-cheberiak/
 """
 
-import const
-from openweather.requests import Requests
+import requests
 
 
-if __name__ == '__main__':
-	request: Requests = Requests(const.weather_token)
-	request.request_by_city('Kyiv')
+class Requests:
+	def __init__(self, key: str) -> None:
+		url: str = 'https://api.openweathermap.org/data/3.0/onecall?'
+		token: str = key
+
+	def request_by_city(self, sity: str):
+		sity = sity.capitalize()
