@@ -33,7 +33,7 @@ from openweather.requests import Requests
 if __name__ == '__main__':
 	telegram_bot = Worker()
 
-	request: Requests = Requests(const, True)
+	request: Requests = Requests(const)
 	request.request_by_city('Kyiv')
 
 # while True:

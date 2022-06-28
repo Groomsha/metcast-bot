@@ -27,6 +27,7 @@ https://www.linkedin.com/in/ihor-cheberiak/
 
 weather_token: str = ''
 
+proxy_on = False
 http_proxy  = ""
 https_proxy = ""
 ftp_proxy   = ""

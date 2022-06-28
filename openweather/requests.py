@@ -33,12 +33,11 @@ import requests
 class Requests:
 	URL: str = 'http://api.openweathermap.org/data/2.5/weather?'
 
-	def __init__(self, const: Any, proxy: bool=False) -> None:
+	def __init__(self, const: Any) -> None:
 		self.__const: Any = const
-		self.__proxy: bool = proxy
 
 	def request_by_city(self, sity: str) -> Dict:
 		request_url = f'{self.URL}q={sity.capitalize()}&appid={self.__const.weather_token}'
-		res = requests.get(request_url, proxies=self.__const.proxies_requests if self.__proxy else None )
+		res = requests.get(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None )
 
 		print(loads(res.text))
