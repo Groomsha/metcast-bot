@@ -24,7 +24,20 @@ Ihor Cheberiak (c) 2022
 https://www.linkedin.com/in/ihor-cheberiak/
 """
 
+from json import loads
+from typing import Dict, Any
+
+import requests
+
 
 class Worker:
-	def __init__(self) -> None:
-		pass
+	URL: str = 'https://api.telegram.org/bot'
+
+	def __init__(self, const: Any) -> None:
+		self.__const: Any = const
+
+	def request_by_update_bot(self) -> Dict:
+		request_url = f'{self.URL}{self.__const.telegram_token}/getUpdates'
+		res = requests.get(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None)
+
+		return loads(res.text)

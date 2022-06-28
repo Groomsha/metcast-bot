@@ -31,10 +31,13 @@ from openweather.requests import Requests
 
 
 if __name__ == '__main__':
-	telegram_bot = Worker()
+	telegram_bot = Worker(const)
+	res_telegram_api = telegram_bot.request_by_update_bot()
+	print('Telegram Bot Get API:', res_telegram_api)
 
-	request: Requests = Requests(const)
-	request.request_by_city('Kyiv')
+	openweather = Requests(const)
+	res_openweather_api = openweather.request_by_city('Kyiv')
+	print('Open Weather Get API:', res_openweather_api)
 
 # while True:
 # 	pass

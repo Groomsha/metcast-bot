@@ -40,4 +40,4 @@ class Requests:
 		request_url = f'{self.URL}q={sity.capitalize()}&appid={self.__const.weather_token}'
 		res = requests.get(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None )
 
-		print(loads(res.text))
+		return loads(res.text)
