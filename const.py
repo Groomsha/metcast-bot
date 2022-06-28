@@ -26,3 +26,13 @@ https://www.linkedin.com/in/ihor-cheberiak/
 
 
 weather_token: str = ''
+
+http_proxy  = ""
+https_proxy = ""
+ftp_proxy   = ""
+
+proxies_requests = {
+	"http"  : http_proxy,
+	"https" : https_proxy,
+	"ftp"   : ftp_proxy
+	}
