@@ -24,26 +24,19 @@ Ihor Cheberiak (c) 2022
 https://www.linkedin.com/in/ihor-cheberiak/
 """
 
-import const
-
-from sqlite_worker import SQLiteWorker
-from telegram_bot.worker import Worker
-from openweather.requests import Requests
+import sqlite3
 
 
-if __name__ == '__main__':
-	db_connect = SQLiteWorker('telegram_chats')
-	cursor = db_connect.db_connect()
+class SQLiteWorker:
+	def __init__(self, db_name: str) -> None:
+		self.__db: str = db_name
+		self.__connect: sqlite3 = None
 
-	telegram_bot = Worker(const)
-	res_telegram_api = telegram_bot.request_by_update_bot()
-	print('Telegram Bot Get API:', res_telegram_api)
+	def db_connect(self) -> sqlite3:
+		self.__connect = sqlite3.connect(self.__db)
+		cursor = self.__connect.cursor()
 
-	openweather = Requests(const)
-	res_openweather_api = openweather.request_by_city('Kyiv')
-	print('Open Weather Get API:', res_openweather_api)
+		return cursor
 
-	db_connect.db_close()
-
-# while True:
-# 	pass
+	def db_close(self) -> None:
+		self.__connect.close()
