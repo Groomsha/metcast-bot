@@ -25,18 +25,32 @@ https://www.linkedin.com/in/ihor-cheberiak/
 """
 
 import sqlite3
+from typing import List
 
 
 class SQLiteWorker:
 	def __init__(self, db_name: str) -> None:
-		self.__db: str = db_name
-		self.__connect: sqlite3 = None
+		self.__connect: sqlite3 = sqlite3.connect(db_name)
+		self.__cursor: sqlite3 = self.__connect.cursor()
 
-	def db_connect(self) -> sqlite3:
-		self.__connect = sqlite3.connect(self.__db)
-		cursor = self.__connect.cursor()
+	def save_new_row(self, row: str) -> None:
+		self.__cursor.execute(f'INSERT INTO id_user_chat (id_chat, id_update)VALUES{row[0]},{row[1]}')
 
-		return cursor
+		self.__cursor.execute(f'''INSERT INTO id_user_data 
+		(id_data, username, first_name, last_name, language)VALUES{row[2]},{row[3]},{row[4]},{row[5]},{row[6]}''')
 
-	def db_close(self) -> None:
+	def get_db_id(self, row: List[int]) -> List[bool]:
+		record: sqlite3 = self.__cursor.execute('SELECT * FROM id_user_chat')
+
+		for id in record:
+			if id[0] == row[0]:
+				print(id)
+				if id[1] != row[1]:
+					return (True, False)
+				else:
+					return (True, True)
+
+		return (False, False)
+
+	def close_db(self) -> None:
 		self.__connect.close()

@@ -33,11 +33,34 @@ import requests
 class Worker:
 	URL: str = 'https://api.telegram.org/bot'
 
-	def __init__(self, const: Any) -> None:
+	def __init__(self, const: Any, db: Any) -> None:
 		self.__const: Any = const
+		self.__db_data: Any = db
+		self.__counter: int = 0
 
 	def request_by_update_bot(self) -> Dict:
 		request_url = f'{self.URL}{self.__const.telegram_token}/getUpdates'
 		res = requests.get(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None)
 
 		return loads(res.text)
+
+	def parser_update_bot(self):
+		res: Dict = self.request_by_update_bot()
+
+		if len(res['result']) > self.__counter:
+			self.__counter =  len(res['result'])
+
+			for result_row in res['result']:
+				for result_row_key, result_row_value in result_row.items():
+					if result_row_key == 'update_id':
+						print('update_id => ', result_row_value)
+					elif result_row_key == 'message':
+						for key, value in result_row_value.items():
+							if key == 'from':
+								print('from => ', value)
+							elif key == 'chat':
+								print('chat => ', value)
+							elif key == 'text':
+								print('text => ', value)
+		else:
+			pass

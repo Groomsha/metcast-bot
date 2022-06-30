@@ -24,28 +24,35 @@ Ihor Cheberiak (c) 2022
 https://www.linkedin.com/in/ihor-cheberiak/
 """
 
-import threading
+import sqlite3
 
-import const
 
-from sources_db.sqlite_worker import SQLiteWorker
-from telegram_bot.worker import Worker
-from openweather.requests import Requests
+def create_table(db_connect: sqlite3, db_cursor: sqlite3) -> None:
+	create_table_id_user_chat: str = '''CREATE TABLE IF NOT EXISTS id_user_chat (
+		id_chat INTEGER PRIMARY KEY, 
+		id_update INTEGER);'''
+
+	create_table_id_user_data: str = '''CREATE TABLE IF NOT EXISTS id_user_data (
+		id_data INTEGER PRIMARY KEY, 
+		username TEXT, 
+		first_name TEXT,
+		last_name TEXT,
+		language TEXT);'''
+
+	db_cursor.execute(create_table_id_user_chat)
+	db_cursor.execute(create_table_id_user_data)
+	db_connect.commit()
 
 
 if __name__ == '__main__':
-	db_connect = SQLiteWorker('telegram_chats.db')
+	connect: sqlite3 = sqlite3.connect('../telegram_chats.db')
+	cursor: sqlite3 = connect.cursor()
 
-	telegram_bot = Worker(const, db_connect)
-	res_telegram_api = telegram_bot.request_by_update_bot()
-	print('Telegram Bot Get API:', res_telegram_api)
+	create_table(connect, cursor)
 
-	openweather = Requests(const)
-	res_openweather_api = openweather.request_by_city('Kyiv')
-	print('Open Weather Get API:', res_openweather_api)
+	sqlite_select_query: str = "select sqlite_version();"
+	cursor.execute(sqlite_select_query)
+	record = cursor.fetchall()
 
-	telegram_bot.parser_update_bot()
-	# db_connect.close_db()
-
-# while True:
-# 	pass
+	print("Версия базы данных SQLite: ", record)
+	connect.close()
