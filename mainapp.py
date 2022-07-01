@@ -28,15 +28,12 @@ import threading
 
 import const
 
-from sources_db.sqlite_worker import SQLiteWorker
 from telegram_bot.worker import Worker
 from openweather.requests import Requests
 
 
 if __name__ == '__main__':
-	db_connect = SQLiteWorker('telegram_chats.db')
-
-	telegram_bot = Worker(const, db_connect)
+	telegram_bot = Worker(const)
 	res_telegram_api = telegram_bot.request_by_update_bot()
 	print('Telegram Bot Get API:', res_telegram_api)
 
@@ -45,7 +42,7 @@ if __name__ == '__main__':
 	print('Open Weather Get API:', res_openweather_api)
 
 	telegram_bot.parser_update_bot()
-	# db_connect.close_db()
+
 
 # while True:
 # 	pass

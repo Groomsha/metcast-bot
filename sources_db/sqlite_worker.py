@@ -25,7 +25,7 @@ https://www.linkedin.com/in/ihor-cheberiak/
 """
 
 import sqlite3
-from typing import List
+from typing import List, Tuple
 
 
 class SQLiteWorker:
@@ -39,18 +39,17 @@ class SQLiteWorker:
 		self.__cursor.execute(f'''INSERT INTO id_user_data 
 		(id_data, username, first_name, last_name, language)VALUES{row[2]},{row[3]},{row[4]},{row[5]},{row[6]}''')
 
-	def get_db_id(self, row: List[int]) -> List[bool]:
-		record: sqlite3 = self.__cursor.execute('SELECT * FROM id_user_chat')
+	def get_db_id(self, row: List[int]) -> Tuple[bool, bool]:
+		record: sqlite3 = self.__cursor.execute(f'SELECT id_chat, id_update FROM id_user_chat WHERE id_chat = {row[0]}')
+		res_record: Tuple = record.fetchall()
 
-		for id in record:
-			if id[0] == row[0]:
-				print(id)
-				if id[1] != row[1]:
-					return (True, False)
-				else:
-					return (True, True)
-
-		return (False, False)
+		if len(res_record) != 0:
+			if res_record[0][1] == row[1]:
+				return (True, False)
+			else:
+				return (True, True)
+		else:
+			return (False, False)
 
 	def close_db(self) -> None:
 		self.__connect.close()

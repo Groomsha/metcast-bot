@@ -29,13 +29,17 @@ from typing import Dict, Any
 
 import requests
 
+from sources_db.sqlite_worker import SQLiteWorker
+
 
 class Worker:
 	URL: str = 'https://api.telegram.org/bot'
 
-	def __init__(self, const: Any, db: Any) -> None:
+	def __init__(self, const: Any) -> None:
+		self.db_connect = SQLiteWorker('telegram_chats.db')
+		self.db_connect.get_db_id([1275569537, 941332901])
+
 		self.__const: Any = const
-		self.__db_data: Any = db
 		self.__counter: int = 0
 
 	def request_by_update_bot(self) -> Dict:
@@ -46,21 +50,27 @@ class Worker:
 
 	def parser_update_bot(self):
 		res: Dict = self.request_by_update_bot()
+		update_id: int = 0
 
 		if len(res['result']) > self.__counter:
 			self.__counter =  len(res['result'])
 
 			for result_row in res['result']:
-				for result_row_key, result_row_value in result_row.items():
-					if result_row_key == 'update_id':
-						print('update_id => ', result_row_value)
-					elif result_row_key == 'message':
-						for key, value in result_row_value.items():
-							if key == 'from':
-								print('from => ', value)
-							elif key == 'chat':
-								print('chat => ', value)
-							elif key == 'text':
-								print('text => ', value)
+				for result_one_key, result_one_value in result_row.items():
+					if result_one_key == 'update_id':
+						update_id = result_one_value
+					elif result_one_key == 'message':
+						for result_two_key, result_two_value in result_one_value.items():
+							if result_two_key == 'from':
+								for result_tree_key, result_tree_value in result_two_value.items():
+									if result_tree_key == 'id':
+										print(result_tree_value, update_id)
+										print(self.db_connect.get_db_id([result_tree_value, update_id]))
+										self.db_connect.close_db()
+								print('from => ', result_two_value)
+							elif result_two_key == 'chat':
+								print('chat => ', result_two_value)
+							elif result_two_key == 'text':
+								print('text => ', result_two_value)
 		else:
 			pass
