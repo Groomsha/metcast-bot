@@ -24,7 +24,7 @@ Ihor Cheberiak (c) 2022
 https://www.linkedin.com/in/ihor-cheberiak/
 """
 
-import threading
+from threading import Timer
 
 import const
 
@@ -32,14 +32,21 @@ from telegram_bot.worker import Worker
 from openweather.requests import Requests
 
 
-if __name__ == '__main__':
-	telegram_bot = Worker(const)
-	openweather = Requests(const)
-
+def check_bot():
 	city = telegram_bot.check_new_message()
 
 	for get in city:
 		telegram_bot.sending_message(openweather.check_new_map_city(get))
 
+if __name__ == '__main__':
+	telegram_bot = Worker(const)
+	openweather = Requests(const)
+
+	check_bot()
+	# timer_to_new_game = Timer(2, check_bot)
+	# timer_to_new_game.start()
+
 # while True:
-# 	pass
+# 	check_bot()
+# 	timer_to_new_game = Timer(2, check_bot)
+# 	timer_to_new_game.start()

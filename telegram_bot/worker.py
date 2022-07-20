@@ -28,7 +28,7 @@ from json import loads
 from typing import Dict, List, Any
 
 import requests
-
+import openweather.requests as tem
 from sources_db.sqlite_worker import SQLiteWorker
 
 
@@ -47,25 +47,24 @@ class Worker:
 
 		return loads(res.text)
 
-	def __request_by_message_bot(self, message) -> None:
-		request_url = f'{self.URL}{self.__const.telegram_token}/getUpdates'
-		res = requests.get(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None)
-
 	def __parser_update_bot(self) -> None:
 		res: Dict = self.__request_by_update_bot()
-		temp: List = []
+		data: List = []
 
 		if len(res['result']) > self.__counter:
 			self.__counter =  len(res['result'])
 
 			for result_row in res['result']:
 				request: Dict = {}
+				temp: List = []
+
 				request['update_id'] = result_row.get('update_id')
 
 				for result_one_key, result_one_value in result_row.get('message').items():
 					if result_one_key == 'from':
 						for result_two_key, result_two_value in result_one_value.items():
 							if result_two_key == 'id':
+								temp.append(result_two_value)
 								request['chat_id'] = result_two_value
 							elif result_two_key == 'first_name':
 								request['first_name'] = result_two_value
@@ -78,24 +77,49 @@ class Worker:
 
 				self.__sql_save_user(request)
 				temp.append(request['text'])
+				data.append(temp)
 		else:
 			pass
 
-		return temp
+		return data
 
 	def __sql_save_user(self, request) -> str:
 		res = self.db_connect.get_db_id([request['chat_id'], request['update_id']])
 
+
 		if not res[0]:
 			self.db_connect.save_user_chat_row([request['chat_id'], request['update_id']])
 			self.db_connect.save_user_data_row([request['chat_id'], request['username'], request['first_name'], request['last_name']])
+
 			return request['text']
 		else:
-			return request['text']
+			if not res[1]:
+				return request['text']
 
+
+		# print(request['text'])
+		# return request['text']
 
 	def check_new_message(self) -> str:
 		return self.__parser_update_bot()
 
 	def sending_message(self, data: Dict) -> None:
-		print(data)
+		if not data[1] == 'city not found':
+			temp_dict:Dict = data[2]
+			temp_text: str = f'In the city of {data[1]} now such weather conditions:\n'\
+						f'temperature in the shade: {tem.Requests.kelvin_to_celsius(temp_dict["temp"])} ^C\n' \
+						f'lowest temperature: {tem.Requests.kelvin_to_celsius(temp_dict["temp_min"])} ^C\n' \
+						f'highest temperature: {tem.Requests.kelvin_to_celsius(temp_dict["temp_max"])} ^C'
+
+			message: Dict = {
+				'chat_id': data[0],
+				'text': temp_text,
+			}
+		else:
+			message: Dict = {
+				'chat_id': data[0],
+				'text': 'This city does not exist or there is a mistake in the names :(',
+			}
+
+		request_url: str = f'{self.URL}{self.__const.telegram_token}/sendMessage'
+		requests.post(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None, data=message)

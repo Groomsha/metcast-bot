@@ -42,13 +42,13 @@ class Requests:
 
 		return loads(res.text)
 
-	def check_new_map_city(self, city: str):
-		request = self.request_by_city(city)
+	def check_new_map_city(self, city: List) -> List:
+		request = self.request_by_city(city[1])
 
 		if request['cod'] == '404':
-			data: List = [request['message']]
+			data: List = [city[0], request['message']]
 		else:
-			data: List = [city]
+			data: List = [city[0], city[1]]
 
 			data.append(request['main'])
 			data.append(request['wind'])
@@ -56,5 +56,6 @@ class Requests:
 		return data
 
 	@staticmethod
-	def kelvin_to_celsius(temp: float):
-		return temp - 273,15
+	def kelvin_to_celsius(temp: float) -> float:
+		celsius = temp - 273,15
+		return round(celsius[0], 4)
