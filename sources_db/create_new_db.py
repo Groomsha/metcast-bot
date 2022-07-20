@@ -28,6 +28,7 @@ import sqlite3
 
 
 def create_table(db_connect: sqlite3, db_cursor: sqlite3) -> None:
+	"""Метод створює дві таблиці у базі даних"""
 	create_table_id_user_chat: str = '''CREATE TABLE IF NOT EXISTS id_user_chat (
 		id_chat INTEGER PRIMARY KEY, 
 		id_update INTEGER);'''
@@ -44,6 +45,7 @@ def create_table(db_connect: sqlite3, db_cursor: sqlite3) -> None:
 
 
 if __name__ == '__main__':
+	"""Клас створює чисту базу даних із таблицями"""
 	connect: sqlite3 = sqlite3.connect('../telegram_chats.db')
 	cursor: sqlite3 = connect.cursor()
 

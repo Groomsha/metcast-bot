@@ -25,6 +25,7 @@ https://www.linkedin.com/in/ihor-cheberiak/
 """
 
 
+update_id: int
 weather_token: str = ''
 telegram_token: str = ''
 
@@ -38,5 +39,3 @@ proxies_requests = {
 	"https" : https_proxy,
 	"ftp"   : ftp_proxy
 	}
-
-update_id: int

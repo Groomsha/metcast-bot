@@ -30,11 +30,11 @@ from telegram_bot.worker import Worker
 from openweather.requests import Requests
 
 
-def check_bot():
-	city = telegram_bot.check_new_message()
+def check_bot(bot, weather) -> None:
+	city = bot.check_new_message()
 
-	if not city == None:
-		telegram_bot.sending_message(openweather.check_new_map_city(city))
+	if city != None:
+		telegram_bot.sending_message(weather.check_new_map_city(city))
 
 
 if __name__ == '__main__':
@@ -42,4 +42,4 @@ if __name__ == '__main__':
 	openweather = Requests(const)
 
 	while True:
-		check_bot()
+		check_bot(telegram_bot, openweather)

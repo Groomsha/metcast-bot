@@ -36,6 +36,7 @@ class Worker:
 	URL: str = 'https://api.telegram.org/bot'
 
 	def __init__(self, const: Any) -> None:
+		"""Клас створює запит та повертає дані від API Telegram"""
 		# self.db_connect = SQLiteWorker('telegram_chats.db')
 
 		self.__bot_start = False
@@ -43,12 +44,19 @@ class Worker:
 		self.__counter: int = 0
 
 	def __request_by_update_bot(self) -> Dict:
+		"""Метод робить запит API Telegram"""
 		request_url = f'{self.URL}{self.__const.telegram_token}/getUpdates'
 		res = requests.get(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None)
 
 		return loads(res.text)
 
-	def __parser_update_bot(self) -> None:
+	def __request_by_push_data_bot(self, message: Dict) -> None:
+		"""Метод надсилає дані в чат Telegram"""
+		request_url: str = f'{self.URL}{self.__const.telegram_token}/sendMessage'
+		requests.post(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None, data=message)
+
+	def __parser_update_bot(self) -> List:
+		"""Метод вибирає отримані дані та формує запит"""
 		res: Dict = self.__request_by_update_bot()
 		data: List = []
 
@@ -92,8 +100,8 @@ class Worker:
 			self.__bot_start = True
 
 	# def __sql_save_user(self, request) -> str:
+	# 	"""Метод записує/оновлює унікальні дані у базі даних"""
 	# 	res = self.db_connect.get_db_id([request['chat_id'], request['update_id']])
-	#
 	#
 	# 	if not res[0]:
 	# 		self.db_connect.save_user_chat_row([request['chat_id'], request['update_id']])
@@ -104,12 +112,14 @@ class Worker:
 	# 		if not res[1]:
 	# 			return request['text']
 
-	def check_new_message(self) -> str:
+	def check_new_message(self) -> List:
+		"""Метод перевіряє нові повідомлення"""
 		return self.__parser_update_bot()
 
 	def sending_message(self, data: Dict) -> None:
+		"""Метод формує відповідь на нове повідомлення"""
 		if not data[1] == 'city not found':
-			temp_dict:Dict = data[2]
+			temp_dict: Dict = data[2]
 			temp_text: str = f'In the city of {data[1]} now such weather conditions:\n'\
 						f'temperature in the shade: {tem.Requests.kelvin_to_celsius(temp_dict["temp"])} ^C\n' \
 						f'lowest temperature: {tem.Requests.kelvin_to_celsius(temp_dict["temp_min"])} ^C\n' \
@@ -125,5 +135,4 @@ class Worker:
 				'text': 'This city does not exist or there is a mistake in the names :(',
 			}
 
-		request_url: str = f'{self.URL}{self.__const.telegram_token}/sendMessage'
-		requests.post(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None, data=message)
+		self.__request_by_push_data_bot(message)

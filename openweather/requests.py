@@ -34,22 +34,24 @@ class Requests:
 	URL: str = 'http://api.openweathermap.org/data/2.5/weather?'
 
 	def __init__(self, const: Any) -> None:
+		"""Клас створює запит та повертає дані від API погоди"""
 		self.__const: Any = const
 
 	def request_by_city(self, req: str) -> Dict:
+		"""Метод робить запит API погоди за вказаним містом"""
 		request_url = f'{self.URL}q={req.capitalize()}&appid={self.__const.weather_token}'
-		res = requests.get(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None )
+		res = requests.get(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None)
 
 		return loads(res.text)
 
 	def check_new_map_city(self, city: List) -> List:
+		"""Метод повертає оброблені дані щодо погоди"""
+		data: List = [city[1], city[2]]
 		request = self.request_by_city(city[2])
 
 		if request['cod'] == '404':
 			data: List = [city[1], request['message']]
 		else:
-			data: List = [city[1], city[2]]
-
 			data.append(request['main'])
 			data.append(request['wind'])
 
@@ -57,5 +59,6 @@ class Requests:
 
 	@staticmethod
 	def kelvin_to_celsius(temp: float) -> float:
-		celsius = temp - 273,15
-		return round(celsius[0], 4)
+		"""Метод для переведення кельвіни в цельсій"""
+		celsius = temp - 273.15
+		return round(celsius, 4)
