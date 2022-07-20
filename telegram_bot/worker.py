@@ -125,6 +125,5 @@ class Worker:
 				'text': 'This city does not exist or there is a mistake in the names :(',
 			}
 
-		print(message)
 		request_url: str = f'{self.URL}{self.__const.telegram_token}/sendMessage'
 		requests.post(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None, data=message)
