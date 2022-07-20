@@ -43,12 +43,12 @@ class Requests:
 		return loads(res.text)
 
 	def check_new_map_city(self, city: List) -> List:
-		request = self.request_by_city(city[1])
+		request = self.request_by_city(city[2])
 
 		if request['cod'] == '404':
-			data: List = [city[0], request['message']]
+			data: List = [city[1], request['message']]
 		else:
-			data: List = [city[0], city[1]]
+			data: List = [city[1], city[2]]
 
 			data.append(request['main'])
 			data.append(request['wind'])

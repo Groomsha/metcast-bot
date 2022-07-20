@@ -29,15 +29,16 @@ from typing import Dict, List, Any
 
 import requests
 import openweather.requests as tem
-from sources_db.sqlite_worker import SQLiteWorker
+# from sources_db.sqlite_worker import SQLiteWorker
 
 
 class Worker:
 	URL: str = 'https://api.telegram.org/bot'
 
 	def __init__(self, const: Any) -> None:
-		self.db_connect = SQLiteWorker('telegram_chats.db')
+		# self.db_connect = SQLiteWorker('telegram_chats.db')
 
+		self.__bot_start = False
 		self.__const: Any = const
 		self.__counter: int = 0
 
@@ -51,54 +52,57 @@ class Worker:
 		res: Dict = self.__request_by_update_bot()
 		data: List = []
 
-		if len(res['result']) > self.__counter:
-			self.__counter =  len(res['result'])
+		# if len(res['result']) > self.__counter:
+		# 	self.__counter =  len(res['result'])
 
-			for result_row in res['result']:
-				request: Dict = {}
-				temp: List = []
+		for result_row in res['result']:
+			request: Dict = {}
+			temp: List = []
 
-				request['update_id'] = result_row.get('update_id')
+			request['update_id'] = result_row.get('update_id')
+			temp.append(result_row.get('update_id'))
 
-				for result_one_key, result_one_value in result_row.get('message').items():
-					if result_one_key == 'from':
-						for result_two_key, result_two_value in result_one_value.items():
-							if result_two_key == 'id':
-								temp.append(result_two_value)
-								request['chat_id'] = result_two_value
-							elif result_two_key == 'first_name':
-								request['first_name'] = result_two_value
-							elif result_two_key == 'last_name':
-								request['last_name'] = result_two_value
-							elif result_two_key == 'username':
-								request['username'] = result_two_value
-					elif result_one_key == 'text':
-						request['text'] = result_one_value
+			for result_one_key, result_one_value in result_row.get('message').items():
+				if result_one_key == 'from':
+					for result_two_key, result_two_value in result_one_value.items():
+						if result_two_key == 'id':
+							temp.append(result_two_value)
+							request['chat_id'] = result_two_value
+						elif result_two_key == 'first_name':
+							request['first_name'] = result_two_value
+						elif result_two_key == 'last_name':
+							request['last_name'] = result_two_value
+						elif result_two_key == 'username':
+							request['username'] = result_two_value
+				elif result_one_key == 'text':
+					request['text'] = result_one_value
 
-				self.__sql_save_user(request)
-				temp.append(request['text'])
-				data.append(temp)
+				# self.__sql_save_user(request)
+			temp.append(request['text'])
+			data.append(temp)
 		else:
 			pass
 
-		return data
-
-	def __sql_save_user(self, request) -> str:
-		res = self.db_connect.get_db_id([request['chat_id'], request['update_id']])
-
-
-		if not res[0]:
-			self.db_connect.save_user_chat_row([request['chat_id'], request['update_id']])
-			self.db_connect.save_user_data_row([request['chat_id'], request['username'], request['first_name'], request['last_name']])
-
-			return request['text']
+		if self.__bot_start:
+			if self.__const.update_id != data[-1][0]:
+				self.__const.update_id = data[-1][0]
+				return data[-1]
 		else:
-			if not res[1]:
-				return request['text']
+			self.__const.update_id = data[-1][0]
+			self.__bot_start = True
 
-
-		# print(request['text'])
-		# return request['text']
+	# def __sql_save_user(self, request) -> str:
+	# 	res = self.db_connect.get_db_id([request['chat_id'], request['update_id']])
+	#
+	#
+	# 	if not res[0]:
+	# 		self.db_connect.save_user_chat_row([request['chat_id'], request['update_id']])
+	# 		self.db_connect.save_user_data_row([request['chat_id'], request['username'], request['first_name'], request['last_name']])
+	#
+	# 		return request['text']
+	# 	else:
+	# 		if not res[1]:
+	# 			return request['text']
 
 	def check_new_message(self) -> str:
 		return self.__parser_update_bot()
@@ -121,5 +125,6 @@ class Worker:
 				'text': 'This city does not exist or there is a mistake in the names :(',
 			}
 
+		print(message)
 		request_url: str = f'{self.URL}{self.__const.telegram_token}/sendMessage'
 		requests.post(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None, data=message)
