@@ -29,9 +29,9 @@ weather_token: str = ''
 telegram_token: str = ''
 
 proxy_on = False
-http_proxy  = ""
-https_proxy = ""
-ftp_proxy   = ""
+http_proxy  = "/"
+https_proxy = "/"
+ftp_proxy   = "/"
 
 proxies_requests = {
 	"http"  : http_proxy,

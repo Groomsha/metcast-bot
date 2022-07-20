@@ -25,7 +25,7 @@ https://www.linkedin.com/in/ihor-cheberiak/
 """
 
 from json import loads
-from typing import Dict, Any
+from typing import Dict, List, Any
 
 import requests
 
@@ -36,8 +36,25 @@ class Requests:
 	def __init__(self, const: Any) -> None:
 		self.__const: Any = const
 
-	def request_by_city(self, sity: str) -> Dict:
-		request_url = f'{self.URL}q={sity.capitalize()}&appid={self.__const.weather_token}'
+	def request_by_city(self, req: str) -> Dict:
+		request_url = f'{self.URL}q={req.capitalize()}&appid={self.__const.weather_token}'
 		res = requests.get(request_url, proxies=self.__const.proxies_requests if self.__const.proxy_on else None )
 
 		return loads(res.text)
+
+	def check_new_map_city(self, city: str):
+		request = self.request_by_city(city)
+
+		if request['cod'] == '404':
+			data: List = [request['message']]
+		else:
+			data: List = [city]
+
+			data.append(request['main'])
+			data.append(request['wind'])
+
+		return data
+
+	@staticmethod
+	def kelvin_to_celsius(temp: float):
+		return temp - 273,15

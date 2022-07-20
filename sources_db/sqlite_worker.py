@@ -33,11 +33,14 @@ class SQLiteWorker:
 		self.__connect: sqlite3 = sqlite3.connect(db_name)
 		self.__cursor: sqlite3 = self.__connect.cursor()
 
-	def save_new_row(self, row: str) -> None:
-		self.__cursor.execute(f'INSERT INTO id_user_chat (id_chat, id_update)VALUES{row[0]},{row[1]}')
+	def save_user_chat_row(self, row: List) -> None:
+		self.__cursor.execute('INSERT INTO id_user_chat (id_chat, id_update) VALUES (?,?)', (row[0], row[1]))
+		self.__connect.commit()
 
-		self.__cursor.execute(f'''INSERT INTO id_user_data 
-		(id_data, username, first_name, last_name, language)VALUES{row[2]},{row[3]},{row[4]},{row[5]},{row[6]}''')
+	def save_user_data_row(self, row: List) -> None:
+		self.__cursor.execute('INSERT INTO id_user_data (id_data, username, first_name, last_name) VALUES (?,?,?,?)',
+		(row[0], row[1], row[2], row[3]))
+		self.__connect.commit()
 
 	def get_db_id(self, row: List[int]) -> Tuple[bool, bool]:
 		record: sqlite3 = self.__cursor.execute(f'SELECT id_chat, id_update FROM id_user_chat WHERE id_chat = {row[0]}')

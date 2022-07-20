@@ -36,8 +36,7 @@ def create_table(db_connect: sqlite3, db_cursor: sqlite3) -> None:
 		id_data INTEGER PRIMARY KEY, 
 		username TEXT, 
 		first_name TEXT,
-		last_name TEXT,
-		language TEXT);'''
+		last_name TEXT);'''
 
 	db_cursor.execute(create_table_id_user_chat)
 	db_cursor.execute(create_table_id_user_data)
