@@ -28,8 +28,7 @@ from json import loads
 from typing import Dict, List, Any
 
 import requests
-import openweather.requests as tem
-# from sources_db.sqlite_worker import SQLiteWorker
+from .message import Message
 
 
 class Worker:
@@ -118,21 +117,5 @@ class Worker:
 
 	def sending_message(self, data: Dict) -> None:
 		"""Метод формує відповідь на нове повідомлення"""
-		if not data[1] == 'city not found':
-			temp_dict: Dict = data[2]
-			temp_text: str = f'In the city of {data[1]} now such weather conditions:\n'\
-						f'temperature in the shade: {tem.Requests.kelvin_to_celsius(temp_dict["temp"])} ^C\n' \
-						f'lowest temperature: {tem.Requests.kelvin_to_celsius(temp_dict["temp_min"])} ^C\n' \
-						f'highest temperature: {tem.Requests.kelvin_to_celsius(temp_dict["temp_max"])} ^C'
-
-			message: Dict = {
-				'chat_id': data[0],
-				'text': temp_text,
-			}
-		else:
-			message: Dict = {
-				'chat_id': data[0],
-				'text': 'This city does not exist or there is a mistake in the names :(',
-			}
-
-		self.__request_by_push_data_bot(message)
+		local_message = Message('EN', data)
+		self.__request_by_push_data_bot(local_message.message_switch())

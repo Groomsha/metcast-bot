@@ -31,6 +31,7 @@ from openweather.requests import Requests
 
 
 def check_bot(bot, weather) -> None:
+	"""Функція перевіряє наявність нового повідомлення у чаті"""
 	city = bot.check_new_message()
 
 	if city != None:
@@ -38,6 +39,7 @@ def check_bot(bot, weather) -> None:
 
 
 if __name__ == '__main__':
+	"""Точка входу до програми"""
 	telegram_bot = Worker(const)
 	openweather = Requests(const)
 
