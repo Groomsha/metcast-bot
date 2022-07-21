@@ -39,16 +39,30 @@ class Message:
 			return self.__message_error()
 
 		if self.__local == 'EN':
-			return self.__local_en_message()
+			return self.__message_local_en()
 		elif self.__local == 'UA':
-			pass
+			return self.__message_local_ua()
 
-	def __local_en_message(self) -> Dict:
+	def __message_local_en(self) -> Dict:
 		temp_dict: Dict = self.__data[2]
-		temp_text: str = f'In the city of {self.__data[1]} now such weather conditions:\n'\
+		temp_text: str = f'In the city of {self.__data[1].capitalize()} now such weather conditions:\n'\
 					f'temperature in the shade: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp"])} ^C\n' \
 					f'lowest temperature: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_min"])} ^C\n' \
 					f'highest temperature: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_max"])} ^C'
+
+		message: Dict = {
+			'chat_id': self.__data[0],
+			'text': temp_text,
+		}
+
+		return message
+
+	def __message_local_ua(self) -> Dict:
+		temp_dict: Dict = self.__data[2]
+		temp_text: str = f'У місті {self.__data[1].capitalize()} зараз такі погодні умови:\n'\
+					f'Температура в тіні: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp"])} ^C\n' \
+					f'Найнижча температура: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_min"])} ^C\n' \
+					f'Найвища температура: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_max"])} ^C'
 
 		message: Dict = {
 			'chat_id': self.__data[0],
@@ -65,5 +79,18 @@ class Message:
 				'chat_id': self.__data[0],
 				'text': 'This city does not exist or there is a mistake in the names :(',
 			}
+		elif self.__local == 'UA':
+			message: Dict = {
+				'chat_id': self.__data[0],
+				'text': 'Цього міста не існує або в назві помилка :(',
+			}
+
+		return message
+
+	def __message_bad_cities(self) -> Dict:
+		message: Dict = {
+			'chat_id': self.__data[0],
+			'text': 'Русский военный корабль, иди нахуй!',
+		}
 
 		return message

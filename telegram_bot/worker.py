@@ -117,5 +117,5 @@ class Worker:
 
 	def sending_message(self, data: Dict) -> None:
 		"""Метод формує відповідь на нове повідомлення"""
-		local_message = Message('EN', data)
+		local_message = Message('UA', data)
 		self.__request_by_push_data_bot(local_message.message_switch())
