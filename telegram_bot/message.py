@@ -45,10 +45,16 @@ class Message:
 
 	def __message_local_en(self) -> Dict:
 		temp_dict: Dict = self.__data[2]
+		gust_dict: Dict = self.__data[3]
 		temp_text: str = f'In the city of {self.__data[1].capitalize()} now such weather conditions:\n'\
-					f'temperature in the shade: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp"])} ^C\n' \
-					f'lowest temperature: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_min"])} ^C\n' \
-					f'highest temperature: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_max"])} ^C'
+						 f'\U0001F31E temperature in the shade: ' \
+						 f'{openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp"])} ^C\n' \
+						 f'\U0001F31E lowest temperature: ' \
+						 f'{openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_min"])} ^C\n' \
+						 f'\U0001F31E highest temperature: ' \
+						 f'{openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_max"])} ^C\n' \
+						 f'\U0001F300 Wind speed: {gust_dict["speed"]}\n' \
+						 f'\U0001F4A8 Gusts of wind: {gust_dict["gust"]}'
 
 		message: Dict = {
 			'chat_id': self.__data[0],
@@ -59,16 +65,22 @@ class Message:
 
 	def __message_local_ua(self) -> Dict:
 		temp_dict: Dict = self.__data[2]
+		gust_dict: Dict = self.__data[3]
 		temp_text: str = f'У місті {self.__data[1].capitalize()} зараз такі погодні умови:\n'\
-					f'Температура в тіні: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp"])} ^C\n' \
-					f'Найнижча температура: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_min"])} ^C\n' \
-					f'Найвища температура: {openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_max"])} ^C'
+						 f'\U0001F31E Температура в тіні: ' \
+						 f'{openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp"])} ^C\n' \
+						 f'\U0001F31E Найнижча температура: ' \
+						 f'{openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_min"])} ^C\n' \
+						 f'\U0001F31E Найвища температура: ' \
+						 f'{openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_max"])} ^C\n' \
+						 f'\U0001F300 Швидкість вітру: {gust_dict["speed"]}\n' \
+						 f'\U0001F4A8 Пориви вітру: {gust_dict["gust"]}'
 
 		message: Dict = {
 			'chat_id': self.__data[0],
 			'text': temp_text,
 		}
-
+		print(self.__data)
 		return message
 
 	def __message_error(self) -> Dict:
@@ -90,7 +102,7 @@ class Message:
 	def __message_bad_cities(self) -> Dict:
 		message: Dict = {
 			'chat_id': self.__data[0],
-			'text': 'Русский военный корабль, иди нахуй!',
+			'text': 'Русский военный корабль, \U0001F4A3 иди нахуй! \U0001F4A9',
 		}
 
 		return message
