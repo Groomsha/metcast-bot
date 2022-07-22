@@ -53,8 +53,8 @@ class Message:
 						 f'{openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_min"])} ^C\n' \
 						 f'\U0001F31E highest temperature: ' \
 						 f'{openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_max"])} ^C\n' \
-						 f'\U0001F300 Wind speed: {gust_dict["speed"]}\n' \
-						 f'\U0001F4A8 Gusts of wind: {gust_dict["gust"]}'
+						 f'\U0001F300 Wind speed: {gust_dict.get("speed", "Calm")}\n' \
+						 f'\U0001F4A8 Gusts of wind: {gust_dict.get("gust", "Almost none")}'
 
 		message: Dict = {
 			'chat_id': self.__data[0],
@@ -73,14 +73,14 @@ class Message:
 						 f'{openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_min"])} ^C\n' \
 						 f'\U0001F31E Найвища температура: ' \
 						 f'{openweather.requests.Requests.kelvin_to_celsius(temp_dict["temp_max"])} ^C\n' \
-						 f'\U0001F300 Швидкість вітру: {gust_dict["speed"]}\n' \
-						 f'\U0001F4A8 Пориви вітру: {gust_dict["gust"]}'
+						 f'\U0001F300 Швидкість вітру: {gust_dict.get("speed", "Штиль")}\n' \
+						 f'\U0001F4A8 Пориви вітру: {gust_dict.get("gust", "Майже немає")}'
 
 		message: Dict = {
 			'chat_id': self.__data[0],
 			'text': temp_text,
 		}
-		print(self.__data)
+
 		return message
 
 	def __message_error(self) -> Dict:
